@@ -1,4 +1,4 @@
-__all__ = ["all", "any", "diff"]
+__all__ = ["all", "any", "diff", "replace"]
 
 
 from ._types import Optional, Tuple, Union, array
@@ -120,13 +120,35 @@ def diff(
     .. versionadded:: 2024.12
     """
 
-def replace(
-    arr,
-    old,
-    new
-):
-        """Return an array with every occurrence of scalar old replaced by new.
 
-        Includes implicit sparse values and treats NaN as matching NaN.
-        The input is not modified.
-        """
+def replace(
+    x: array,
+    old: Union[bool, int, float, complex],
+    new: Union[bool, int, float, complex],
+    /,
+) -> array:
+    """
+    Replaces each element of an input array ``x`` which is equal to a scalar value ``old`` with a scalar value ``new``.
+
+    Parameters
+    ----------
+    x: array
+        input array.
+    old: Union[bool, int, float, complex]
+        scalar value to replace. **Should** have a type and value compatible with the data type of ``x`` (see :ref:`mixing-scalars-and-arrays`).
+    new: Union[bool, int, float, complex]
+        replacement scalar value. **Should** have a type and value compatible with the data type of ``x`` (see :ref:`mixing-scalars-and-arrays`).
+
+    Returns
+    -------
+    out: array
+        an array in which each element ``x_i`` equal to ``old`` is replaced by ``new`` and all other elements are equal to the corresponding elements in ``x``. The returned array **must** have the same shape and data type as ``x``.
+
+    Notes
+    -----
+
+    -   An element ``x_i`` **must** be replaced if ``x_i`` is equal to ``old`` (see :func:`~array_api.equal`) or if both ``x_i`` and ``old`` are ``NaN`` (see :func:`~array_api.isnan`).
+    -   The function **must** consider every element of ``x``, including elements which are not explicitly stored (e.g., implicit fill values in a sparse array representation).
+    -   The function **must not** modify ``x``.
+    -   If ``old`` or ``new`` does not have a type and value compatible with the data type of ``x``, behavior is unspecified and thus implementation-defined.
+    """
