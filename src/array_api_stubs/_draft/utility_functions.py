@@ -119,3 +119,14 @@ def diff(
 
     .. versionadded:: 2024.12
     """
+
+def replace(
+    arr,
+    old,
+    new
+):
+        """Return an array with every occurrence of scalar old replaced by new.
+
+        Includes implicit sparse values and treats NaN as matching NaN.
+        The input is not modified.
+        """
