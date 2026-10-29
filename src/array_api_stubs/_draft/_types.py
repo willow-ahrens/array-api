@@ -8,6 +8,7 @@ from __future__ import annotations
 
 __all__ = [
     "Any",
+    "Callable",
     "List",
     "Literal",
     "NestedSequence",
@@ -34,6 +35,7 @@ __all__ = [
 from dataclasses import dataclass
 from typing import (
     Any,
+    Callable,
     List,
     Literal,
     Optional,

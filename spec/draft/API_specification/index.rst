@@ -27,6 +27,7 @@ A conforming implementation of the array API standard must provide and support t
    data_types
    elementwise_functions
    function_and_method_signatures
+   higher_order
    indexing
    indexing_functions
    inspection

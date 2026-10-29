@@ -1,5 +1,9 @@
+__all__ = ["reduce", "elementwise"]
 
-nary_ops = {
+from ._types import Callable, Optional, Tuple, Union, array, dtype
+
+
+binary_ops = {
     "+": "add",
     "add": "add",
     "-": "subtract",
@@ -17,9 +21,9 @@ nary_ops = {
     "%": "remainder",
     "mod": "remainder",
     "remainder": "remainder",
-    "**": "power",
-    "pow": "power",
-    "power": "power",
+    "**": "pow",
+    "pow": "pow",
+    "power": "pow",
     "==": "equal",
     "eq": "equal",
     "equal": "equal",
@@ -52,7 +56,6 @@ nary_ops = {
     "bitwise_right_shift": "bitwise_right_shift",
     "and": "logical_and",
     "or": "logical_or",
-    "not": "logical_not",
     "min": "minimum",
     "max": "maximum",
     "logaddexp": "logaddexp",
@@ -71,8 +74,8 @@ unary_ops = {
     "bitwise_invert": "bitwise_invert",
     "not": "logical_not",
     "logical_not": "logical_not",
-    "abs": "absolute",
-    "absolute": "absolute",
+    "abs": "abs",
+    "absolute": "abs",
     "sqrt": "sqrt",
     "exp": "exp",
     "log": "log",
@@ -85,12 +88,12 @@ unary_ops = {
     "sinh": "sinh",
     "cosh": "cosh",
     "tanh": "tanh",
-    "asin": "arcsin",
-    "acos": "arccos",
-    "atan": "arctan",
-    "asinh": "arcsinh",
-    "acosh": "arccosh",
-    "atanh": "arctanh",
+    "asin": "asin",
+    "acos": "acos",
+    "atan": "atan",
+    "asinh": "asinh",
+    "acosh": "acosh",
+    "atanh": "atanh",
 }
 
 
@@ -116,22 +119,25 @@ reduction_ops = {
     # "^": "bitwise_xor",
 }
 
+
 def reduce(
-    op: FinchOperator,
-    x,
+    op: Callable[[array, array], array],
+    x: array,
     /,
     *,
-    axis: int | tuple[int, ...] | None = None,
-    dtype=None,
+    axis: Optional[Union[int, Tuple[int, ...]]] = None,
+    dtype: Optional[dtype] = None,
     keepdims: bool = False,
-    init=None,
-):
+    init: Optional[Union[bool, int, float, complex]] = None,
+) -> array:
     """
     Reduces the input array ``x`` with the binary operator ``op``. Reduces along
-    the specified `axis`, with an initial value `init`.
+    the specified ``axis``, with an initial value ``init``.
 
     Parameters
     ----------
+    op: Callable[[array, array], array]
+        binary operator with which to perform the reduction (e.g., :func:`~array_api.add`).
     x: array
         input array. Should have a numeric data type.
     axis: Optional[Union[int, Tuple[int, ...]]]
@@ -149,7 +155,7 @@ def reduce(
         input array (see :ref:`broadcasting`). Otherwise, if ``False``, the reduced axes
         (dimensions) must not be included in the result. Default: ``False``.
 
-    init: Optional
+    init: Optional[Union[bool, int, float, complex]]
         Initial value for the reduction. If ``None``, a suitable initial value will be
         calculated. The initial value must be compatible with the operation defined by
         ``op``. For example, if ``op`` is addition, the initial value should be zero; if
@@ -164,26 +170,30 @@ def reduce(
         ``dtype`` parameter above.
     """
 
-def elementwise(f: FinchOperator, *args) -> LazyTensor:
+
+def elementwise(f: Callable[..., array], /, *args: array) -> array:
     """
-        elementwise(f, *args) -> LazyTensor:
+    Applies the function ``f`` elementwise to the given arguments, following
+    broadcasting rules (see :ref:`broadcasting`).
+    The function ``f`` should be a callable that takes the same number of arguments
+    as the number of arrays passed to ``elementwise``.
 
-    Applies the function f elementwise to the given arguments, following
-    [broacasting rules](https://numpy.org/doc/stable/user/basics.broadcasting.html).
-    The function f should be a callable that takes the same number of arguments
-    as the number of tensors passed to `elementwise`.
+    The function will automatically handle broadcasting of the input arrays to
+    ensure they have compatible shapes.  For example, ``elementwise(add, x, y)``
+    is equivalent to ``x + y``.
 
-    The function will automatically handle broadcasting of the input tensors to
-    ensure they have compatible shapes.  For example, `elementwise(ffunc.add,
-    x, y)` is equivalent to `x + y`.
-
-    Parameters:
-    - f: The function to apply elementwise.
-    - *args: The tensors to apply the function to. These tensors should be
+    Parameters
+    ----------
+    f: Callable[..., array]
+        the function to apply elementwise.
+    args: array
+        the arrays to apply the function to. These arrays should be
         compatible for broadcasting.
 
-    Returns:
-    - LazyTensor: The tensor, `out`, of results from applying `f` elementwise to
-    the input tensors.  After broadcasting the arguments to the same shape, for
-    each index `i`, `out[*i] = f(args[0][*i], args[1][*i], ...)`.
+    Returns
+    -------
+    out: array
+        the array, ``out``, of results from applying ``f`` elementwise to
+        the input arrays.  After broadcasting the arguments to the same shape, for
+        each index ``i``, ``out[*i] = f(args[0][*i], args[1][*i], ...)``.
     """
