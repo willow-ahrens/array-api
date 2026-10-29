@@ -5,6 +5,7 @@ from .constants import *
 from .creation_functions import *
 from .data_type_functions import *
 from . import data_types as dtype
+from .einop import *
 from .elementwise_functions import *
 from .higher_order import *
 from .indexing_functions import *

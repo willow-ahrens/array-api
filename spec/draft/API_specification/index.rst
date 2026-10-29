@@ -25,6 +25,7 @@ A conforming implementation of the array API standard must provide and support t
    creation_functions
    data_type_functions
    data_types
+   einop
    elementwise_functions
    function_and_method_signatures
    higher_order
